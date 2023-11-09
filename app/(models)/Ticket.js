@@ -8,7 +8,7 @@ const TicketSchema = new Schema(
     title: String,
     description: String,
     category: String,
-    priority: String,
+    priority: Number,
     progress: Number,
     status: String,
     active: Boolean,
@@ -19,3 +19,5 @@ const TicketSchema = new Schema(
 );
 
 const Ticket = mongoose.models.Ticket || mongoose.model("Ticket", TicketSchema);
+
+export default Ticket;
