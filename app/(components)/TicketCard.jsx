@@ -2,6 +2,7 @@ import DeleteButton from "./DeleteButton";
 import PriorityDisplay from "./PriorityDisplay";
 import ProgressBar from "./ProgressBar";
 import StatusBadge from "./StatusBadge";
+import Link from "next/link";
 
 const TicketCard = ({ ticket }) => {
   const formatTimestamp = (timestamp) => {
@@ -22,17 +23,19 @@ const TicketCard = ({ ticket }) => {
         <PriorityDisplay priority={ticket.priority} />
         <DeleteButton id={ticket._id} />
       </div>
-      <h4>{ticket.title}</h4>
-      <hr className="h-px border-0 bg-page mb-2" />
-      <p className="whitespace-pre-wrap">{ticket.description}</p>
-      <div className="flex-grow"></div>
-      <div className="flex justify-between mt-2">
-        <div className="flex flex-col">
-          <p className="text-xs my-1">{formatTimestamp(ticket.createdAt)}</p>
-          <ProgressBar progress={ticket.progress} />
+      <Link href={`/TicketPage/${ticket._id}`} style={{ display: "contents" }}>
+        <h4>{ticket.title}</h4>
+        <hr className="h-px border-0 bg-page mb-2" />
+        <p className="whitespace-pre-wrap">{ticket.description}</p>
+        <div className="flex-grow"></div>
+        <div className="flex justify-between mt-2">
+          <div className="flex flex-col">
+            <p className="text-xs my-1">{formatTimestamp(ticket.createdAt)}</p>
+            <ProgressBar progress={ticket.progress} />
+          </div>
+          <StatusBadge status={ticket.status} />
         </div>
-        <StatusBadge status={ticket.status} />
-      </div>
+      </Link>
     </div>
   );
 };

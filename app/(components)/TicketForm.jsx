@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const TicketForm = () => {
+const TicketForm = ({ ticket }) => {
   const router = useRouter();
+  const IS_EDITING = ticket._id !== "new";
 
   const startingState = {
     title: "",
@@ -14,6 +15,15 @@ const TicketForm = () => {
     status: "not started",
     category: "bug",
   };
+
+  if (IS_EDITING) {
+    startingState.title = ticket.title;
+    startingState.description = ticket.description;
+    startingState.priority = ticket.priority;
+    startingState.progress = ticket.progress;
+    startingState.status = ticket.status;
+    startingState.category = ticket.category;
+  }
 
   const [formData, setFormData] = useState(startingState);
 
@@ -27,14 +37,26 @@ const TicketForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/Tickets", {
-      method: "POST",
-      body: JSON.stringify({ formData }),
-      "content-type": "application/json",
-    });
+    if (IS_EDITING) {
+      const res = await fetch(`/api/Tickets/${ticket._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ formData }),
+        "content-type": "application/json",
+      });
 
-    if (!res.ok) {
-      throw new Error("Failed to create ticket");
+      if (!res.ok) {
+        throw new Error("Failed to update ticket");
+      }
+    } else {
+      const res = await fetch("/api/Tickets", {
+        method: "POST",
+        body: JSON.stringify({ formData }),
+        "content-type": "application/json",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to create ticket");
+      }
     }
 
     router.refresh();
@@ -48,7 +70,7 @@ const TicketForm = () => {
         method="post"
         onSubmit={handleSubmit}
       >
-        <h3>Create Your Ticket</h3>
+        <h3>{IS_EDITING ? "Update your ticket" : "Create Your Ticket"}</h3>
 
         <label>Title</label>
         <input
@@ -155,7 +177,11 @@ const TicketForm = () => {
           <option value="completed">Completed</option>
         </select>
 
-        <input type="submit" value="Create ticket" className="btn" />
+        <input
+          type="submit"
+          value={IS_EDITING ? "Update ticket" : "Create ticket"}
+          className="btn"
+        />
       </form>
     </div>
   );
